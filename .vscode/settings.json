@@ -1,0 +1,10 @@
+{
+    "csharpextensions.privateMemberPrefix": "_",
+    "csharpextensions.useThisForCtorAssignments": false,
+    "files.exclude": {
+        "**/.vs": true,
+        "**/.vscode": true,
+        "**/bin": true,
+        "**/obj": true
+    }
+}

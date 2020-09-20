@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using API.Dtos;
 using Core.Entities;
@@ -7,12 +6,56 @@ using Core.Interfaces;
 using Core.Specifications;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
+using Infrastructure.Data;
+using API.Errors;
+using Microsoft.AspNetCore.Http;
 
 namespace API.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ProductsController : ControllerBase
+    public class BuggyController : BaseApiController
+    {
+        private readonly StoreContext _context;
+
+        public BuggyController(StoreContext context)
+        {
+            _context = context;
+        }
+
+        [HttpGet("notfound")]
+        public ActionResult GetNotFoundRequest()
+        {
+            var thing = _context.Products.Find(44);
+
+            if (thing is null)
+                return NotFound(new ApiResponse(404));
+
+            return Ok();
+        }        
+        
+        [HttpGet("servererror")]
+        public ActionResult GetServerError()
+        {
+            var thing = _context.Products.Find(44);
+
+            var thingToReturn = thing.ToString();
+
+            return Ok();
+        }        
+        
+        [HttpGet("badrequest")]
+        public ActionResult GetBadRequest()
+        {
+            return BadRequest(new ApiResponse(400));
+        }        
+        
+        [HttpGet("badrequest/{id}")]
+        public ActionResult GetBadRequest(int id)
+        {
+            return BadRequest();
+        }
+    }
+
+    public class ProductsController : BaseApiController
     {
         private readonly IGenericRepository<Product> _productRepository;
         private readonly IGenericRepository<ProductBrand> _productBrandRepository;
@@ -42,11 +85,18 @@ namespace API.Controllers
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ProductToReturnDto>> GetProduct(int id) 
         {
             var spec = new ProductsWithTypesAndBrandsSpecification(id);
 
             var product = await _productRepository.GetEntityWithSpecification(spec);
+
+            if(product is null)
+            {
+                return NotFound(new ApiResponse(404));
+            }
 
             return _mapper.Map<Product, ProductToReturnDto>(product);
         }

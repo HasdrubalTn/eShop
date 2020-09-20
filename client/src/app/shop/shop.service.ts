@@ -12,6 +12,6 @@ export class ShopService {
   constructor(private http: HttpClient) { }
 
   getProducts(): Observable<IPagination> {
-    return this.http.get<IPagination>('https://localhost:5001/api/products?pageSize=20');
+    return this.http.get<IPagination>('https://localhost:5001/api/products');
   }
 }

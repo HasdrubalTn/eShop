@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 
 import { IBrand } from '../shared/models/brand';
 import { IPagination } from '../shared/models/pagination';
+import { IProduct } from '../shared/models/product';
 import { IType } from '../shared/models/productType';
 import { ShopParams } from '../shared/models/shopparams';
 
@@ -27,7 +28,7 @@ export class ShopService {
       params = params.append('typeId', shopParams.typeId.toString());
     }
 
-    if(shopParams.search){
+    if (shopParams.search){
       params = params.append('search', shopParams.search);
     }
 
@@ -45,5 +46,9 @@ export class ShopService {
 
   getTypes(): Observable<IType[]> {
     return this.http.get<IType[]>('https://localhost:5001/api/products/types');
+  }
+
+  getProduct(id: number): Observable<IProduct> {
+    return this.http.get<IProduct>(`https://localhost:5001/api/products/${id}`);
   }
 }

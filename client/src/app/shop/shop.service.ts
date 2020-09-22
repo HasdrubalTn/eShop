@@ -2,6 +2,7 @@ import { HttpClient, HttpParams, HttpRequest, HttpResponse } from '@angular/comm
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 import { IBrand } from '../shared/models/brand';
 import { IPagination } from '../shared/models/pagination';
@@ -13,7 +14,7 @@ import { ShopParams } from '../shared/models/shopparams';
   providedIn: 'root'
 })
 export class ShopService {
-  baseUrl: 'https://localhost:5001/api/';
+  baseUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
 
@@ -36,19 +37,19 @@ export class ShopService {
     params = params.append('pageIndex', shopParams.pageNumber.toString());
     params = params.append('pageSize', shopParams.pageSize.toString());
 
-    return this.http.get<IPagination>('https://localhost:5001/api/products', {observe: 'response', params})
+    return this.http.get<IPagination>(this.baseUrl + 'products', {observe: 'response', params})
     .pipe(map(response => response.body));
   }
 
   getBrands(): Observable<IBrand[]> {
-    return this.http.get<IBrand[]>('https://localhost:5001/api/products/brands');
+    return this.http.get<IBrand[]>(this.baseUrl + 'products/brands');
   }
 
   getTypes(): Observable<IType[]> {
-    return this.http.get<IType[]>('https://localhost:5001/api/products/types');
+    return this.http.get<IType[]>(this.baseUrl + 'products/types');
   }
 
   getProduct(id: number): Observable<IProduct> {
-    return this.http.get<IProduct>(`https://localhost:5001/api/products/${id}`);
+    return this.http.get<IProduct>(this.baseUrl + `products/${id}`);
   }
 }
